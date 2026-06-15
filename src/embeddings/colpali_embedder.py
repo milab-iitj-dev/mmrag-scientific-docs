@@ -9,6 +9,9 @@ import gc
 import numpy as np
 import torch
 from PIL import Image
+from src.utils.logging_utils import get_logger
+
+logger = get_logger(__name__)
 
 class ColPaliEmbedder:
     """Encodes page images into multi-vector npy arrays."""
@@ -37,6 +40,7 @@ class ColPaliEmbedder:
         """Batch processes page images and saves them as .npy files."""
         total = len(image_paths_dict)
         count = 0
+        logger.info("Starting batch ColPali visual embedding for %d pages...", total)
         
         for i, (page_key, img_path) in enumerate(image_paths_dict.items()):
             try:
@@ -44,13 +48,15 @@ class ColPaliEmbedder:
                 npy_path = os.path.join(output_dir, f"{page_key}.npy")
                 np.save(npy_path, vectors)
                 count += 1
+                logger.debug("Successfully embedded page: %s", page_key)
                 
-                if status_callback and (i + 1) % 10 == 0 or (i + 1) == total:
+                if status_callback and ((i + 1) % 10 == 0 or (i + 1) == total):
                     status_callback(i + 1, total, f"Embedded {count}/{total} pages")
+                    logger.info("Progress: Embedded %d/%d pages", count, total)
             except torch.cuda.OutOfMemoryError:
-                print(f"  ⚠️ OOM on {page_key} — skipping...")
+                logger.warning("OutOfMemoryError on page %s — clearing cache and skipping...", page_key)
                 gc.collect()
                 if torch.cuda.is_available():
                     torch.cuda.empty_cache()
             except Exception as e:
-                print(f"  ❌ Error embedding {page_key}: {e}")
+                logger.error("Error embedding page %s: %s", page_key, e)

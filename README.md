@@ -67,42 +67,67 @@ Ask questions about Vision Transformer research papers and get accurate, cited a
 
 ## Quick Start
 
-### 1. Install Dependencies
+### 🖥️ Local System (Windows/Mac/Linux)
 
+#### 1. Setup Environment & Install Dependencies
 ```bash
+# Set up a virtual environment (optional but recommended)
+py -m venv .venv
+source .venv/Scripts/activate  # Windows Git Bash
+# Or: .venv\Scripts\activate   # Windows CMD
+
+# Install packages
 pip install -r requirements.txt
 ```
 
-### 2. Run the Offline Pipeline (Index Building)
-
+#### 2. Run Ingestion & Build Index (Offline)
+Downloads arXiv papers, parses PDFs, generates vision + text embeddings, and stores them in ChromaDB:
 ```bash
-python scripts/parse_pdfs.py --input data/raw/ --output data/parsed/
-python scripts/build_index.py
+py main.py --mode offline
 ```
 
-Or use the full offline pipeline:
-
+#### 3. Run Streamlit UI (Online)
+Starts the interactive Q&A application:
 ```bash
-python -m pipelines.offline_pipeline
+py main.py --mode online
+```
+Then visit: **`http://localhost:8501`** in your browser.
+
+---
+
+### 🧬 HPC Cluster (SLURM)
+
+#### 1. Submit Batch Job (Gradio or Streamlit)
+```bash
+cd /scratch/data/divyasaxena_rs/Vineet_internship
+
+# For Streamlit
+sbatch scripts/slurm_app.sh
+
+# For Gradio
+sbatch scripts/slurm_online_gradio.sh
+```
+*(Prints Job ID, e.g. `346287`)*
+
+#### 2. View Logs Live
+```bash
+# For Streamlit
+tail -f /scratch/data/divyasaxena_rs/sci_rag_app_<JOB_ID>.out
+
+# For Gradio
+tail -f logs/rag_online_<JOB_ID>.out
 ```
 
-### 3. Query with the Online Pipeline
-
+#### 3. Port-Forward to Laptop Browser
+Run this command in a **new terminal on your laptop**:
 ```bash
-python scripts/query.py --question "What is the Vision Transformer?"
-```
+# For Streamlit
+ssh -L 8501:cn27:8501 divyasaxena_rs@172.25.0.81
 
-### 4. Launch the Demo App
-
-**Gradio** (recommended for Kaggle):
-```bash
-python app/gradio_app.py
+# For Gradio
+ssh -L 7860:cn27:7860 divyasaxena_rs@172.25.0.81
 ```
-
-**Streamlit** (full-featured):
-```bash
-streamlit run app/streamlit_app.py
-```
+Then visit: **`http://localhost:8501`** (Streamlit) or **`http://localhost:7860`** (Gradio).
 
 ---
 

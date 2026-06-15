@@ -11,7 +11,7 @@ __author__ = "Vineet"
 # Expose key modular interfaces
 from src.utils.helpers import clean_vram, ensure_directories, extract_zip_archive, create_zip_archive
 from src.models.loader import load_colpali, load_scincl, load_qwen2vl
-from src.context.pdf_parser import PDFParser
+from src.data.pdf_parser import PDFParser
 from src.embeddings.colpali_embedder import ColPaliEmbedder
 from src.embeddings.scincl_embedder import SciNCLEmbedder
 from src.retrieval.colpali_retriever import ColPaliRetriever

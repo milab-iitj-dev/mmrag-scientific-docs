@@ -75,7 +75,7 @@ echo "════════════════════════�
 echo ""
 
 export GRADIO_PORT=${PORT}
-python3 -u pipelines/online_rag_pipeline_with_modern_gradio.py
+python3 -u app/gradio_app.py
 
 echo ""
 echo "════════════════════════════════════════════════════════════"

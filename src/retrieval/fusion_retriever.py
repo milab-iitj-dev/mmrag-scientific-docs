@@ -4,6 +4,10 @@ Fusion Retriever
 Fuses scores from visual (ColPali) and textual (SciNCL) retrieval using min-max normalization.
 """
 
+from src.utils.logging_utils import get_logger
+
+logger = get_logger(__name__)
+
 class FusionRetriever:
     """Combines and ranks scores from visual and text retrievals."""
 
@@ -16,7 +20,9 @@ class FusionRetriever:
         top_k: int = 3
     ) -> list[dict]:
         """Performs min-max normalization and returns fused ranking list."""
+        logger.info("Fusing visual (ColPali) and textual (SciNCL) retrieval scores...")
         if not colpali_results and not scincl_results:
+            logger.warning("No results to fuse.")
             return []
 
         # 1. Normalize ColPali scores
@@ -25,6 +31,7 @@ class FusionRetriever:
         if c_vals:
             c_min, c_max = min(c_vals), max(c_vals)
             c_range = c_max - c_min + 1e-8
+            logger.debug("ColPali score bounds: Min=%.4f, Max=%.4f (Weight=%.2f)", c_min, c_max, colpali_weight)
         else:
             c_min, c_max, c_range = 0, 0, 1e-8
 
@@ -34,6 +41,7 @@ class FusionRetriever:
         if s_vals:
             s_min, s_max = min(s_vals), max(s_vals)
             s_range = s_max - s_min + 1e-8
+            logger.debug("SciNCL score bounds: Min=%.4f, Max=%.4f (Weight=%.2f)", s_min, s_max, scincl_weight)
         else:
             s_min, s_max, s_range = 0, 0, 1e-8
 
@@ -58,11 +66,12 @@ class FusionRetriever:
         all_results.update({r["page_key"]: r for r in scincl_results})
 
         final = []
-        for page_key, fused_score in fused_sorted:
+        for i, (page_key, fused_score) in enumerate(fused_sorted):
             r = all_results.get(page_key, {})
             # Make sure we copy to prevent altering original
             r_copy = dict(r)
             r_copy["fused_score"] = fused_score
             final.append(r_copy)
+            logger.info("Fused Rank [%d]: Page %s (Fused Score: %.4f)", i+1, page_key, fused_score)
 
         return final

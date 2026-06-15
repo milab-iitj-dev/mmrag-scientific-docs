@@ -3,10 +3,10 @@
 #SBATCH --output=/scratch/data/divyasaxena_rs/%x_%j.out
 #SBATCH --error=/scratch/data/divyasaxena_rs/%x_%j.err
 #SBATCH --time=08:00:00
-#SBATCH --partition=gpu
+#SBATCH --partition=fat
 #SBATCH --gres=gpu:1
 #SBATCH --cpus-per-task=4
-#SBATCH --mem=24G
+#SBATCH --mem-per-cpu=12G
 
 # ═══════════════════════════════════════════════════════════════
 #  IITJ HPC — Run Streamlit App (port-forwarded to your laptop)
@@ -20,8 +20,8 @@
 INTERN_NAME="Vineet"
 HPC_USER="divyasaxena_rs"
 WORK_DIR="/scratch/data/${HPC_USER}/${INTERN_NAME}_internship"
-PROJECT_DIR="${WORK_DIR}/Scientific-Multimodal-RAG"
-VENV_DIR="${WORK_DIR}/rag_venv"
+PROJECT_DIR="${WORK_DIR}"
+VENV_DIR="${WORK_DIR}/.venv"
 CACHE_DIR="${WORK_DIR}/.cache/huggingface"
 PORT=8501
 

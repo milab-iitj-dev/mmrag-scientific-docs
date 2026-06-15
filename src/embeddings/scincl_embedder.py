@@ -6,6 +6,9 @@ Encodes text paragraphs and stores them in ChromaDB using SciNCL.
 
 import os
 import chromadb
+from src.utils.logging_utils import get_logger
+
+logger = get_logger(__name__)
 
 class SciNCLEmbedder:
     """Encodes paragraph text and registers with ChromaDB."""
@@ -21,14 +24,17 @@ class SciNCLEmbedder:
     ) -> int:
         """Encodes page texts in batches and stores in a local ChromaDB collection."""
         # 1. Initialize ChromaDB
+        logger.info("Initializing ChromaDB client at: %s", chroma_dir)
         chroma_client = chromadb.PersistentClient(path=chroma_dir)
 
         # Reset collection if exists (fresh start)
         try:
+            logger.debug("Deleting existing ChromaDB collection: %s", collection_name)
             chroma_client.delete_collection(collection_name)
         except Exception:
             pass
 
+        logger.info("Creating fresh ChromaDB collection: %s", collection_name)
         collection = chroma_client.create_collection(
             name=collection_name,
             metadata={"hnsw:space": "cosine"}
@@ -53,6 +59,7 @@ class SciNCLEmbedder:
             ids_to_embed.append(page_key)
 
         total = len(texts_to_embed)
+        logger.info("Found %d paragraphs to encode with SciNCL...", total)
         embedded_count = 0
 
         # 3. Batch encode & upload
@@ -78,5 +85,6 @@ class SciNCLEmbedder:
             embedded_count += len(batch_ids)
             if status_callback:
                 status_callback(embedded_count, total, f"Embedded {embedded_count}/{total} pages")
+            logger.info("Progress: SciNCL indexed %d/%d pages in ChromaDB", embedded_count, total)
 
         return embedded_count

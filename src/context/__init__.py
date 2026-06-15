@@ -1,9 +1,11 @@
 """
-Context Package — PDF Parsing and Document processing.
+Context Package — VLM Input assembly and prompt construction.
 """
 
-from src.context.pdf_parser import PDFParser
+from src.context.context_builder import ContextBuilder, ContextObject
 
 __all__ = [
-    "PDFParser",
+    "ContextBuilder",
+    "ContextObject",
 ]
+

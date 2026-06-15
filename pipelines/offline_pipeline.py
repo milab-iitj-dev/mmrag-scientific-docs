@@ -12,7 +12,7 @@ import time
 import requests
 from src.utils.helpers import clean_vram, ensure_directories, create_zip_archive
 from src.models.loader import load_colpali, load_scincl
-from src.context.pdf_parser import PDFParser
+from src.data.pdf_parser import PDFParser
 from src.embeddings.colpali_embedder import ColPaliEmbedder
 from src.embeddings.scincl_embedder import SciNCLEmbedder
 

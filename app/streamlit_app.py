@@ -1,4 +1,4 @@
- """
+"""
 Scientific Multimodal RAG — Streamlit Q&A Application
 ======================================================
 
